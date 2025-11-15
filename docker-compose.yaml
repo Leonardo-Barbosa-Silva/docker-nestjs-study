@@ -1,0 +1,33 @@
+services:
+  db-mysql:
+    container_name: db-v1.0.0
+    image: mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root-password
+      - MYSQL_DATABASE=db-test
+      - MYSQL_USER=initial-user
+      - MYSQL_USER_PASSWORD=initial-password
+    networks:
+      - first-network
+    volumes:
+      - db:/var/lib/mysql
+
+  api-nestjs:
+    container_name: back-v1.0.0
+    build:
+      context: .
+    ports:
+      - 3001:3000
+    depends_on:
+      - db-mysql
+    networks:
+      - first-network
+    
+networks:
+  first-network:
+    driver: bridge
+
+volumes:
+  db:
