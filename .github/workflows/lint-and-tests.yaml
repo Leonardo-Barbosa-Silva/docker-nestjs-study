@@ -1,0 +1,28 @@
+name: Lint and Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  tests:
+    name: Lint and Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node 22.16.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint and Tests
+        run: |
+          npm run lint
+          npm run test:cov
