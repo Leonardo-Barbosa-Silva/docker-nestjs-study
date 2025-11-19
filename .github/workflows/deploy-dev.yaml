@@ -7,28 +7,44 @@ on:
       - development
 
 env:
-    ENVIRONMENT: development
+  ENVIRONMENT: development
 
 jobs:
-    build:
-        name: Build and Deploy api-test
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
+  build:
+      name: Build
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v5
 
-            - name: Setup Node 22.16.0
-              uses: actions/setup-node@v4
-              with:
-                node-version: 22.16.0
-                cache: 'npm'
-            
-            - name: Install dependencies
-              run: npm ci
+          - name: Setup Node 22.16.0
+            uses: actions/setup-node@v4
+            with:
+              node-version: 22.16.0
+              cache: 'npm'
+          
+          - name: Install dependencies
+            run: npm ci
 
-            - name: Set environment variables
-              run: |
-                echo "ENVIRONMENT=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
+          - name: Set environment variables
+            run: |
+              echo "ENVIRONMENT=${{ env.ENVIRONMENT }}" >> $GITHUB_ENV
 
-            - name: Build the application
-              run: npm run build
+          - name: Build the application
+            run: npm run build
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Generate tag
+        id: generate-tag
+        run: |
+          SHA=$(echo ${{ github.sha }} | head -c 7)
+          echo "sha=${SHA}" >> $GITHUB_OUTPUT
+
+      # - name: Configure AWS credentials
+        
